@@ -5,7 +5,10 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
 
 export default clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
+  // Dev bypass: a `tk_bypass=1` cookie skips auth (set by the bypass-login
+  // button). TEMPORARY — remove once real login works.
+  const bypass = request.cookies.get("tk_bypass")?.value === "1";
+  if (!isPublicRoute(request) && !bypass) {
     await auth.protect();
   }
 });

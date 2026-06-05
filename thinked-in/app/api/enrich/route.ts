@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
+import { isAuthorized } from "@/lib/server-auth";
 import type { EnrichmentProgress } from "@/lib/types";
 
 // STUB: reports enrichment progress for a job. Progress is derived from the
@@ -8,8 +8,7 @@ import type { EnrichmentProgress } from "@/lib/types";
 const ENRICH_DURATION_MS = 7000;
 
 export async function GET(request: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) {
+  if (!(await isAuthorized(request))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

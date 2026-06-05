@@ -1,12 +1,11 @@
-import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
+import { isAuthorized } from "@/lib/server-auth";
 
 // STUB: accepts the uploaded CSV and returns a job id + connection count.
 // The real version will parse rows, insert pending connections per user, and
 // kick off Apify enrichment. We never persist the file here.
 export async function POST(request: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) {
+  if (!(await isAuthorized(request))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

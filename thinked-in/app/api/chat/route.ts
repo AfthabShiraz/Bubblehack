@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
+import { isAuthorized } from "@/lib/server-auth";
 import { searchNetwork } from "@/lib/mock-search";
 import type { Connection } from "@/lib/types";
 
@@ -27,8 +27,7 @@ interface HistoryItem {
 }
 
 export async function POST(request: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) {
+  if (!(await isAuthorized(request))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

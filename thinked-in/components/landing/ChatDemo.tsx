@@ -50,7 +50,7 @@ export default function ChatDemo() {
         <AnimatePresence mode="wait">
           <motion.div
             key={conv}
-            className="max-w-[80%] rounded-2xl rounded-br-md bg-indigo-500/40 px-3.5 py-2 text-[13px] font-medium text-white/90 ring-1 ring-white/10"
+            className="max-w-[80%] rounded-2xl rounded-br-md bg-indigo-glow/55 px-3.5 py-2 text-[13px] font-medium text-white/90 ring-1 ring-white/10"
             initial={{ opacity: 0, y: 14, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10 }}

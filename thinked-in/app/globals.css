@@ -15,11 +15,11 @@
   --navy-700: #16204a;
   --navy-600: #1f2c63;
 
-  /* Dynamic accent hues */
-  --hue-indigo: #6366f1;
-  --hue-blue: #3b82f6;
-  --hue-cyan: #22d3ee;
-  --hue-violet: #a855f7;
+  /* LinkedIn brand blues (no purple/cyan rainbow) */
+  --hue-indigo: #0a66c2; /* LinkedIn primary blue */
+  --hue-blue: #378fe9; /* LinkedIn medium blue */
+  --hue-cyan: #70b5f9; /* LinkedIn light blue */
+  --hue-violet: #004182; /* LinkedIn dark blue */
 
   /* Semantic */
   --background: var(--navy-950);

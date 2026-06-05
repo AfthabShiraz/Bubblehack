@@ -26,7 +26,7 @@ export default function GetStartedBubble() {
             <motion.button
               onClick={handleClick}
               aria-label="Get started"
-              className="group relative inline-flex items-center justify-center gap-2 rounded-full glass-strong px-7 py-3.5 text-base font-medium text-foreground shadow-[0_8px_40px_-10px_rgba(99,102,241,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-glow/60"
+              className="group relative inline-flex items-center justify-center gap-2 rounded-full glass-strong px-7 py-3.5 text-base font-medium text-foreground shadow-[0_8px_40px_-10px_rgba(10,102,194,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-glow/60"
               initial={{ scale: 1, opacity: 1 }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
@@ -43,7 +43,7 @@ export default function GetStartedBubble() {
         <AnimatePresence>
           {popped && (
             <motion.span
-              className="pointer-events-none absolute inset-0 rounded-full border-2 border-indigo-300/60"
+              className="pointer-events-none absolute inset-0 rounded-full border-2 border-cyan-glow/70"
               initial={{ scale: 1, opacity: 0.85 }}
               animate={{ scale: 2.4, opacity: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
