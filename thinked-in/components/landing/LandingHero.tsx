@@ -47,6 +47,11 @@ export default function LandingHero() {
           <span className="text-white/80">in one prompt</span>
         </h1>
 
+        {/* Desktop-only one-liner (mobile stays as-is) */}
+        <p className="mt-4 hidden text-balance text-lg text-white/85 drop-shadow-[0_1px_8px_rgba(12,74,140,0.35)] md:block">
+          Find out what your bubble can provide today.
+        </p>
+
         <GetStartedBubble onStart={start} />
 
         <div className="mt-14 w-full">
