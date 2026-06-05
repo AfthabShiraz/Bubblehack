@@ -44,7 +44,7 @@ export default function ChatDemo() {
   const current = CONVERSATIONS[conv];
 
   return (
-    <div className="mx-auto flex min-h-[320px] w-full max-w-md flex-col gap-3 px-4">
+    <div className="mx-auto flex h-[340px] w-full max-w-md flex-col justify-end gap-3 overflow-hidden px-4 [mask-image:linear-gradient(to_bottom,transparent,#000_14%)]">
       {/* User message — right side. Keyed by conv so it re-animates on switch. */}
       <div className="flex justify-end">
         <AnimatePresence mode="wait">
