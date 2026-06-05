@@ -68,10 +68,10 @@ body {
   inset: 0;
   overflow: hidden;
   background:
-    radial-gradient(60% 80% at 15% 5%, color-mix(in oklab, var(--hue-cyan) 30%, transparent), transparent 60%),
-    radial-gradient(55% 75% at 90% 15%, color-mix(in oklab, var(--hue-blue) 22%, transparent), transparent 58%),
-    radial-gradient(70% 90% at 75% 95%, color-mix(in oklab, var(--hue-indigo) 16%, transparent), transparent 60%),
-    var(--bg);
+    radial-gradient(70% 55% at 25% 0%, color-mix(in oklab, var(--hue-blue) 38%, transparent), transparent 68%),
+    radial-gradient(60% 50% at 90% 12%, color-mix(in oklab, var(--hue-cyan) 34%, transparent), transparent 62%),
+    radial-gradient(80% 70% at 70% 100%, color-mix(in oklab, var(--hue-indigo) 22%, transparent), transparent 64%),
+    linear-gradient(180deg, color-mix(in oklab, var(--hue-cyan) 26%, #ffffff) 0%, var(--bg) 58%, var(--bg) 100%);
   background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
   animation: aurora-drift 26s ease-in-out infinite alternate;
 }
@@ -81,10 +81,10 @@ body {
     background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
   }
   50% {
-    background-position: 30% 40%, 60% 30%, 80% 60%, 0 0;
+    background-position: 30% 35%, 65% 25%, 75% 70%, 0 0;
   }
   100% {
-    background-position: 60% 20%, 20% 60%, 30% 80%, 0 0;
+    background-position: 55% 18%, 25% 55%, 35% 80%, 0 0;
   }
 }
 
