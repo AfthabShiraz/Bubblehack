@@ -72,20 +72,8 @@ body {
     radial-gradient(60% 50% at 90% 12%, color-mix(in oklab, var(--hue-cyan) 34%, transparent), transparent 62%),
     radial-gradient(80% 70% at 70% 100%, color-mix(in oklab, var(--hue-indigo) 22%, transparent), transparent 64%),
     linear-gradient(180deg, color-mix(in oklab, var(--hue-cyan) 26%, #ffffff) 0%, var(--bg) 58%, var(--bg) 100%);
-  background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
-  animation: aurora-drift 26s ease-in-out infinite alternate;
-}
-
-@keyframes aurora-drift {
-  0% {
-    background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
-  }
-  50% {
-    background-position: 30% 35%, 65% 25%, 75% 70%, 0 0;
-  }
-  100% {
-    background-position: 55% 18%, 25% 55%, 35% 80%, 0 0;
-  }
+  /* Static (no drift) so the background is pixel-identical across pages,
+     keeping page-to-page transitions seamless. */
 }
 
 /* ---------------------------------------------------------------------------
@@ -118,6 +106,36 @@ body {
 /* Blue gradient fill for buttons/accents. */
 .bg-gradient-blue {
   background-image: linear-gradient(120deg, #0a66c2 0%, #378fe9 100%);
+}
+
+/* Iridescent oil-slick sheen — rotate a conic gradient for a glassy shimmer. */
+.iridescent-sheen {
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 158, 199, 0.6),
+    rgba(143, 211, 255, 0.6),
+    rgba(179, 164, 255, 0.6),
+    rgba(156, 245, 214, 0.6),
+    rgba(255, 213, 158, 0.6),
+    rgba(126, 200, 255, 0.6),
+    rgba(255, 158, 199, 0.6)
+  );
+  animation: ir-rotate 7s linear infinite;
+}
+
+@keyframes ir-rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iridescent-sheen {
+    animation: none;
+  }
 }
 
 /* Thin custom scrollbar for light surfaces */
