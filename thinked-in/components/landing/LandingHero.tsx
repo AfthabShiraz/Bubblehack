@@ -40,10 +40,10 @@ export default function LandingHero() {
       </header>
 
       {/* Headline → CTA → live chat showcase */}
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center px-6 pb-16 pt-4 text-center">
-        <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-white drop-shadow-[0_2px_10px_rgba(12,74,140,0.4)] sm:text-5xl">
-          Talk to your network
-          <br />
+      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center px-6 pb-16 pt-4 text-center lg:max-w-5xl xl:max-w-6xl">
+        <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-white drop-shadow-[0_2px_10px_rgba(12,74,140,0.4)] sm:text-5xl lg:whitespace-nowrap xl:text-6xl">
+          Talk to your network{" "}
+          <br className="lg:hidden" />
           <span className="text-white/80">in one prompt</span>
         </h1>
 
