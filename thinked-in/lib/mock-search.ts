@@ -28,6 +28,9 @@ function hasAny(haystack: string, terms: string[]) {
 
 export interface SearchResult {
   matches: ProfileCardData[];
+  /** Full connection records behind `matches`, for grounding the LLM reply. */
+  matchedConnections: Connection[];
+  /** Deterministic fallback reply used if the LLM is unavailable. */
   reply: string;
 }
 
@@ -71,7 +74,11 @@ export function searchNetwork(message: string): SearchResult {
     .slice(0, 3)
     .map((s) => s.c);
 
-  return { matches: top.map(toCard), reply: buildReply(message, top) };
+  return {
+    matches: top.map(toCard),
+    matchedConnections: top,
+    reply: buildReply(message, top),
+  };
 }
 
 function buildReply(message: string, people: Connection[]): string {
