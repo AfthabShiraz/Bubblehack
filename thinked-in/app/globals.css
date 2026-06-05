@@ -1,26 +1,155 @@
 @import "tailwindcss";
 
+/*
+ * thinkedin — dark navy + gradient + dynamic-hue design system.
+ * Dark is the only theme (consumer, vibrant). Used across landing,
+ * onboarding, and chat.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Navy base ramp */
+  --navy-950: #04070f;
+  --navy-900: #070c1c;
+  --navy-850: #0a1124;
+  --navy-800: #0e1630;
+  --navy-700: #16204a;
+  --navy-600: #1f2c63;
+
+  /* Dynamic accent hues */
+  --hue-indigo: #6366f1;
+  --hue-blue: #3b82f6;
+  --hue-cyan: #22d3ee;
+  --hue-violet: #a855f7;
+
+  /* Semantic */
+  --background: var(--navy-950);
+  --foreground: #eaf0ff;
+  --muted: #93a0c2;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Glass surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-strong: rgba(255, 255, 255, 0.09);
+  --glass-border: rgba(255, 255, 255, 0.14);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+
+  --color-navy-950: var(--navy-950);
+  --color-navy-900: var(--navy-900);
+  --color-navy-850: var(--navy-850);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-navy-600: var(--navy-600);
+
+  --color-indigo-glow: var(--hue-indigo);
+  --color-blue-glow: var(--hue-blue);
+  --color-cyan-glow: var(--hue-cyan);
+  --color-violet-glow: var(--hue-violet);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--navy-950);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------------------
+ * Aurora — animated dynamic-hue gradient backdrop. Drop on a full-bleed
+ * fixed/absolute element behind content.
+ * ------------------------------------------------------------------------- */
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 80% at 15% 10%, color-mix(in oklab, var(--hue-indigo) 38%, transparent), transparent 60%),
+    radial-gradient(50% 70% at 85% 20%, color-mix(in oklab, var(--hue-violet) 32%, transparent), transparent 55%),
+    radial-gradient(70% 90% at 70% 90%, color-mix(in oklab, var(--hue-blue) 30%, transparent), transparent 60%),
+    radial-gradient(50% 60% at 25% 85%, color-mix(in oklab, var(--hue-cyan) 22%, transparent), transparent 55%),
+    var(--navy-950);
+  background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100%;
+  animation: aurora-drift 24s ease-in-out infinite alternate;
+}
+
+.aurora::after {
+  /* subtle grain/vignette to keep it from looking flat */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 120% at 50% 0%, transparent 40%, rgba(2, 4, 10, 0.55) 100%);
+}
+
+@keyframes aurora-drift {
+  0% {
+    background-position: 0% 0%, 100% 0%, 50% 100%, 0% 100%, 0 0;
+  }
+  50% {
+    background-position: 30% 40%, 60% 30%, 80% 60%, 40% 70%, 0 0;
+  }
+  100% {
+    background-position: 60% 20%, 20% 60%, 30% 80%, 70% 40%, 0 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Glass surfaces (frosted glassmorphism)
+ * ------------------------------------------------------------------------- */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* Gradient text for headings / brand */
+.text-gradient {
+  background: linear-gradient(100deg, #fff 0%, var(--hue-cyan) 40%, var(--hue-indigo) 75%, var(--hue-violet) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Thin custom scrollbar for dark surfaces */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.scroll-slim::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora {
+    animation: none;
+  }
 }
