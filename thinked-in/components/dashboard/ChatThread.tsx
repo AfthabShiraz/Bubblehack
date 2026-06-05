@@ -30,7 +30,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
   if (message.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] rounded-3xl rounded-br-lg bg-indigo-glow/55 px-5 py-3 text-[15px] text-white/90 ring-1 ring-white/10">
+        <div className="max-w-[80%] rounded-3xl rounded-br-lg bg-gradient-blue px-5 py-3 text-[15px] text-white shadow-sm">
           {message.content}
         </div>
       </div>
@@ -41,7 +41,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-glow to-indigo-glow">
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-blue">
         <Sparkles className="h-4 w-4 text-white" />
       </span>
       <div className="min-w-0 flex-1">
@@ -80,7 +80,7 @@ function RichText({ text }: { text: string }) {
         <p key={i} className={line.trim() === "" ? "h-2" : ""}>
           {line.split(/(\*\*[^*]+\*\*)/g).map((part, j) =>
             part.startsWith("**") && part.endsWith("**") ? (
-              <strong key={j} className="font-semibold text-white">
+              <strong key={j} className="font-semibold text-foreground">
                 {part.slice(2, -2)}
               </strong>
             ) : (

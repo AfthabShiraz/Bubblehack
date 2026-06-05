@@ -25,7 +25,7 @@ export default async function Home() {
         <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
           Talk to your network
           <br />
-          <span className="text-foreground/55">in one prompt</span>
+          <span className="text-gradient">in one prompt</span>
         </h1>
 
         <GetStartedBubble />

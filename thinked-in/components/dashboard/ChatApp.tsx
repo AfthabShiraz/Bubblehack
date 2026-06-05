@@ -101,7 +101,7 @@ export default function ChatApp({ onReimport }: { onReimport: () => void }) {
   };
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-navy-950">
+    <div className="flex h-dvh w-full overflow-hidden bg-background">
       <ChatSidebar
         sessions={sessions}
         activeId={activeId}
@@ -111,7 +111,7 @@ export default function ChatApp({ onReimport }: { onReimport: () => void }) {
       />
 
       <main className="relative flex min-w-0 flex-1 flex-col">
-        <div className="aurora opacity-40" aria-hidden />
+        <div className="aurora opacity-60" aria-hidden />
         <div className="relative z-10 flex min-h-0 flex-1 flex-col">
           {active.messages.length === 0 ? (
             <EmptyState
@@ -140,7 +140,7 @@ function EmptyState({
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
       <motion.span
-        className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-glow to-indigo-glow"
+        className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-blue shadow-md"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
       >
@@ -159,7 +159,7 @@ function EmptyState({
           <button
             key={p}
             onClick={() => onPick(p)}
-            className="rounded-full glass px-4 py-2 text-sm text-foreground transition-colors hover:bg-white/10"
+            className="rounded-full border border-border bg-surface px-4 py-2 text-sm text-foreground shadow-sm transition-colors hover:bg-black/[0.04]"
           >
             {p}
           </button>

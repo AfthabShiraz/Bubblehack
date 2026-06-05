@@ -18,7 +18,7 @@ export default function ProfileCard({ person, compact = false }: ProfileCardProp
       href={person.linkedinUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`group flex items-center gap-3 rounded-2xl glass px-3 transition-colors hover:bg-white/10 ${
+      className={`group flex items-center gap-3 rounded-2xl border border-border bg-surface px-3 shadow-sm transition-colors hover:bg-black/[0.03] ${
         compact ? "py-2" : "py-3"
       }`}
     >
@@ -27,7 +27,7 @@ export default function ProfileCard({ person, compact = false }: ProfileCardProp
         alt={person.name}
         width={compact ? 36 : 44}
         height={compact ? 36 : 44}
-        className="rounded-full ring-2 ring-white/10 object-cover"
+        className="rounded-full ring-2 ring-black/5 object-cover"
         unoptimized
       />
       <div className="min-w-0 flex-1">

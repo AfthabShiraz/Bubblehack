@@ -39,7 +39,7 @@ export default function ChatInput({
           <button
             onClick={submit}
             disabled={disabled || !value.trim()}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-glow to-indigo-glow text-white transition-opacity disabled:opacity-30"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-blue text-white transition-opacity disabled:opacity-30"
             aria-label="Send"
           >
             <ArrowUp className="h-4 w-4" />

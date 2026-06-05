@@ -111,8 +111,8 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                 onDrop={onDrop}
                 className={`mt-5 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed px-6 py-12 text-center transition-colors ${
                   dragging
-                    ? "border-cyan-glow/70 bg-white/10"
-                    : "border-white/15 glass hover:bg-white/[0.07]"
+                    ? "border-[#0a66c2] bg-[#0a66c2]/5"
+                    : "border-border bg-surface hover:bg-black/[0.03]"
                 }`}
               >
                 <input
@@ -125,7 +125,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                     if (file) acceptFile(file);
                   }}
                 />
-                <UploadCloud className="h-9 w-9 text-cyan-glow" />
+                <UploadCloud className="h-9 w-9 text-[#0a66c2]" />
                 <div>
                   <p className="font-medium text-foreground">
                     Drop your LinkedIn export here
@@ -142,8 +142,8 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
             <Stage key="consent">
               <div className="rounded-3xl glass-strong p-7">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-glow/30 to-indigo-glow/30">
-                    <ShieldCheck className="h-5 w-5 text-cyan-glow" />
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0a66c2]/10">
+                    <ShieldCheck className="h-5 w-5 text-[#0a66c2]" />
                   </span>
                   <h2 className="text-lg font-semibold text-foreground">
                     Quick heads-up
@@ -151,7 +151,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                 </div>
 
                 {fileName && (
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm text-muted">
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-black/[0.04] px-3 py-2 text-sm text-muted">
                     <FileText className="h-4 w-4" />
                     {fileName}
                   </div>
@@ -180,7 +180,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                   </button>
                   <button
                     onClick={startEnrichment}
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-glow to-indigo-glow px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-[1.03]"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-blue px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
                   >
                     I consent
                     <ArrowRight className="h-4 w-4" />
@@ -224,7 +224,7 @@ function Stage({ children, ...rest }: { children: React.ReactNode; key?: string 
 function AssistantBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-glow to-indigo-glow">
+      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-blue">
         <Sparkles className="h-4 w-4 text-white" />
       </span>
       <div className="rounded-3xl rounded-tl-lg glass-strong px-5 py-4">{children}</div>
@@ -257,11 +257,11 @@ function EnrichmentPanel({
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           {ready ? (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-glow">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-blue">
               <Sparkles className="h-4 w-4 text-white" />
             </span>
           ) : (
-            <Loader2 className="h-6 w-6 animate-spin text-cyan-glow" />
+            <Loader2 className="h-6 w-6 animate-spin text-[#0a66c2]" />
           )}
           <div>
             <p className="font-semibold text-foreground">
@@ -277,9 +277,9 @@ function EnrichmentPanel({
       </div>
 
       {/* progress bar */}
-      <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-black/10">
         <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-cyan-glow via-indigo-glow to-violet-glow"
+          className="h-full rounded-full bg-gradient-blue"
           animate={{ width: `${Math.round(ratio * 100)}%` }}
           transition={{ ease: "easeOut", duration: 0.4 }}
         />
@@ -295,14 +295,14 @@ function EnrichmentPanel({
               initial={{ opacity: 0, x: -24, scale: 0.85 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               transition={{ type: "spring", stiffness: 320, damping: 24 }}
-              className="flex items-center gap-3 rounded-2xl bg-white/[0.04] px-3 py-2"
+              className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-2"
             >
               <Image
                 src={person.avatarUrl}
                 alt={person.name}
                 width={34}
                 height={34}
-                className="rounded-full ring-2 ring-white/10"
+                className="rounded-full ring-2 ring-black/5"
                 unoptimized
               />
               <div className="min-w-0">
@@ -311,7 +311,7 @@ function EnrichmentPanel({
                 </p>
                 <p className="truncate text-xs text-muted">{person.role}</p>
               </div>
-              <Sparkles className="ml-auto h-3.5 w-3.5 shrink-0 text-cyan-glow/70" />
+              <Sparkles className="ml-auto h-3.5 w-3.5 shrink-0 text-[#0a66c2]/70" />
             </motion.div>
           ))}
         </AnimatePresence>
