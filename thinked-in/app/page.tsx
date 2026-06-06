@@ -9,7 +9,7 @@ export default async function Home() {
   if (userId) redirect("/dashboard");
 
   return (
-    <div className="relative flex min-h-dvh w-full flex-col">
+    <div className="relative flex h-dvh w-full flex-col overflow-hidden">
       {/* Shared backdrop — covers the full page (incl. behind the translucent mast) */}
       <BackgroundFX />
 
