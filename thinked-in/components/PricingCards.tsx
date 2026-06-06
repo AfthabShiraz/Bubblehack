@@ -26,8 +26,9 @@ const PREMIUM_FEATURES = [
 
 export default function PricingCards() {
   const [annual, setAnnual] = useState(false);
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, has } = useAuth();
 
+  const hasPremium = isSignedIn && has?.({ plan: "premium" });
   const planPeriod = annual ? "annual" : "month";
 
   return (
@@ -83,7 +84,12 @@ export default function PricingCards() {
           </ul>
 
           <div className="mt-auto pt-8">
-            {isSignedIn ? (
+            {hasPremium ? (
+              <p className="flex w-full items-center justify-center gap-1.5 py-2.5 text-sm font-medium text-zinc-400">
+                <Check className="h-4 w-4" />
+                Included in your plan
+              </p>
+            ) : isSignedIn ? (
               <Link
                 href="/dashboard"
                 className="flex w-full items-center justify-center rounded-full border border-zinc-200 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 active:scale-[0.98]"
@@ -103,9 +109,9 @@ export default function PricingCards() {
 
         {/* Premium */}
         <div className="relative flex flex-col rounded-2xl border-2 border-[#0a66c2] bg-white p-8 shadow-lg shadow-[#0a66c2]/10">
-          {/* Popular badge */}
-          <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#0a66c2] px-3 py-0.5 text-xs font-semibold text-white">
-            Most popular
+          {/* Badge */}
+          <span className={`absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-xs font-semibold text-white ${hasPremium ? "bg-emerald-500" : "bg-[#0a66c2]"}`}>
+            {hasPremium ? "Your current plan" : "Most popular"}
           </span>
 
           <p className="text-2xl font-semibold text-[#0a66c2]">Premium</p>
@@ -132,7 +138,20 @@ export default function PricingCards() {
           </ul>
 
           <div className="mt-auto pt-8">
-            {isSignedIn ? (
+            {hasPremium ? (
+              <div className="flex w-full flex-col items-center gap-2">
+                <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600">
+                  <Check className="h-4 w-4" />
+                  You&apos;re on Premium
+                </p>
+                <Link
+                  href="/billing"
+                  className="text-xs text-zinc-400 underline-offset-2 hover:underline"
+                >
+                  Manage subscription
+                </Link>
+              </div>
+            ) : isSignedIn ? (
               <CheckoutButton planId={PREMIUM_PLAN_ID} planPeriod={planPeriod}>
                 <button className="flex w-full items-center justify-center rounded-full bg-[#0a66c2] py-2.5 text-sm font-semibold text-white shadow transition hover:bg-[#004182] active:scale-[0.98]">
                   Upgrade to Premium
