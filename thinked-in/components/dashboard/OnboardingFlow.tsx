@@ -111,7 +111,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                 className={`mt-5 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed px-6 py-12 text-center transition-colors ${
                   dragging
                     ? "border-[#0a66c2] bg-[#0a66c2]/5"
-                    : "border-border bg-surface hover:bg-black/[0.06]"
+                    : "border-border bg-surface hover:bg-[#f2f4f6]"
                 }`}
               >
                 <input
