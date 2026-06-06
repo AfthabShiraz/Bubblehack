@@ -6,15 +6,7 @@ import { CheckoutButton } from "@clerk/nextjs/experimental";
 import { useAuth } from "@clerk/nextjs";
 import { Check } from "lucide-react";
 
-// ─── Replace these with the plan IDs from your Clerk Dashboard ───────────────
-// Dashboard → Configure → Billing → Plans → click a plan → copy its ID
-const PLAN_IDS = {
-  pro: {
-    monthly: "YOUR_PRO_MONTHLY_PLAN_ID",
-    annual: "YOUR_PRO_ANNUAL_PLAN_ID",
-  },
-};
-// ─────────────────────────────────────────────────────────────────────────────
+const PREMIUM_PLAN_ID = "cplan_3EkBcD93nFUwLL0jwEaj4LaaWAG";
 
 const FREE_FEATURES = [
   "50 network queries / month",
@@ -23,7 +15,7 @@ const FREE_FEATURES = [
   "Profile cards",
 ];
 
-const PRO_FEATURES = [
+const PREMIUM_FEATURES = [
   "Unlimited queries",
   "LinkedIn CSV import",
   "Advanced search & filters",
@@ -36,7 +28,6 @@ export default function PricingCards() {
   const [annual, setAnnual] = useState(false);
   const { isSignedIn } = useAuth();
 
-  const planId = annual ? PLAN_IDS.pro.annual : PLAN_IDS.pro.monthly;
   const planPeriod = annual ? "annual" : "month";
 
   return (
@@ -110,14 +101,14 @@ export default function PricingCards() {
           </div>
         </div>
 
-        {/* Pro */}
+        {/* Premium */}
         <div className="relative flex flex-col rounded-2xl border-2 border-[#0a66c2] bg-white p-8 shadow-lg shadow-[#0a66c2]/10">
           {/* Popular badge */}
           <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#0a66c2] px-3 py-0.5 text-xs font-semibold text-white">
             Most popular
           </span>
 
-          <p className="text-2xl font-semibold text-[#0a66c2]">Pro</p>
+          <p className="text-2xl font-semibold text-[#0a66c2]">Premium</p>
           <div className="mt-3 flex items-end gap-1">
             <span className="text-4xl font-semibold tracking-tight text-zinc-900">
               {annual ? "£8" : "£10"}
@@ -132,7 +123,7 @@ export default function PricingCards() {
           </p>
 
           <ul className="mt-6 flex flex-col gap-2.5">
-            {PRO_FEATURES.map((f) => (
+            {PREMIUM_FEATURES.map((f) => (
               <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-600">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#0a66c2]" />
                 {f}
@@ -142,9 +133,9 @@ export default function PricingCards() {
 
           <div className="mt-auto pt-8">
             {isSignedIn ? (
-              <CheckoutButton planId={planId} planPeriod={planPeriod}>
+              <CheckoutButton planId={PREMIUM_PLAN_ID} planPeriod={planPeriod}>
                 <button className="flex w-full items-center justify-center rounded-full bg-[#0a66c2] py-2.5 text-sm font-semibold text-white shadow transition hover:bg-[#004182] active:scale-[0.98]">
-                  Upgrade to Pro
+                  Upgrade to Premium
                 </button>
               </CheckoutButton>
             ) : (
@@ -152,7 +143,7 @@ export default function PricingCards() {
                 href={`/sign-up?redirect_url=/pricing`}
                 className="flex w-full items-center justify-center rounded-full bg-[#0a66c2] py-2.5 text-sm font-semibold text-white shadow transition hover:bg-[#004182] active:scale-[0.98]"
               >
-                Start Pro
+                Start Premium
               </Link>
             )}
           </div>
