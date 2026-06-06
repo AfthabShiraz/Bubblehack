@@ -13,11 +13,13 @@ import {
 import type { EnrichmentProgress, UploadPreviewPerson, UploadResponse } from "@/lib/types";
 import GlassButton from "@/components/GlassButton";
 import SiteMast from "@/components/SiteMast";
+import Switch from "@/components/ui/Switch";
 
 const LINKEDIN_EXPORT_URL =
   "https://www.linkedin.com/mypreferences/d/download-my-data";
 
 type Step = "import" | "consent" | "enriching" | "ready";
+type MessageAccessMode = "full" | "metadata";
 
 export default function OnboardingFlow({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState<Step>("import");
@@ -27,6 +29,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
   const [progress, setProgress] = useState<EnrichmentProgress | null>(null);
   const [roster, setRoster] = useState<UploadPreviewPerson[]>([]);
   const [hasMessagesFile, setHasMessagesFile] = useState(false);
+  const [messagesMode, setMessagesMode] = useState<MessageAccessMode>("full");
   const fileRef = useRef<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -51,6 +54,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
     setStep("enriching");
     const form = new FormData();
     if (fileRef.current) form.append("file", fileRef.current);
+    form.append("messages_mode", messagesMode);
     const res = await fetch("/api/upload", { method: "POST", body: form });
     const data = (await res.json()) as UploadResponse;
     setRoster(data.previewConnections);
@@ -174,14 +178,56 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                   </div>
                 )}
 
-                <p className="mt-4 text-sm leading-relaxed text-muted">
-                  We&apos;ll use{" "}
-                  <span className="font-medium text-foreground">Connections.csv</span>{" "}
-                  to build your private network and, if it&apos;s present,{" "}
-                  <span className="font-medium text-foreground">messages.csv</span>{" "}
-                  for relationship signals. Your import stays private to your account
-                  and isn&apos;t shared.
-                </p>
+                <div className="mt-5 rounded-3xl border border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,255,255,0.88))] p-5 shadow-[0_10px_30px_rgba(10,102,194,0.06)]">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        Message access
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted">
+                        We&apos;ll always import{" "}
+                        <span className="font-medium text-foreground">Connections.csv</span>.
+                        If your ZIP also includes{" "}
+                        <span className="font-medium text-foreground">messages.csv</span>,
+                        this switch controls whether the assistant can search actual
+                        message text or only use relationship strength and recency.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={messagesMode === "full"}
+                      onCheckedChange={(checked) =>
+                        setMessagesMode(checked ? "full" : "metadata")
+                      }
+                      ariaLabel="Enable LinkedIn message content access"
+                    />
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between rounded-2xl border border-black/[0.06] bg-black/[0.025] px-3 py-2.5">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {messagesMode === "full"
+                          ? "Message content enabled"
+                          : "Relationship-only mode"}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {messagesMode === "full"
+                          ? "The assistant can search discussion topics from imported LinkedIn messages."
+                          : "The assistant only uses message counts and recency, not the text itself."}
+                      </p>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                      messagesMode === "full"
+                        ? "bg-[#0a66c2]/10 text-[#0a66c2]"
+                        : "bg-black/[0.06] text-muted"
+                    }`}>
+                      {messagesMode === "full" ? "Full" : "Metadata"}
+                    </span>
+                  </div>
+
+                  <p className="mt-3 text-xs leading-relaxed text-muted">
+                    Your import stays private to your account and isn&apos;t shared.
+                  </p>
+                </div>
 
                 <div className="mt-6 flex items-center justify-end gap-3">
                   <button

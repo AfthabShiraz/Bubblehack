@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
   }
   if (!total) return Response.json({ error: "No connections found in the file." }, { status: 400 });
 
-  const mode: Mode = requestedMode ?? (messagesCsv ? "metadata" : "none");
+  const mode: Mode = messagesCsv ? (requestedMode ?? "full") : "none";
   console.log(`[UPLOAD] mode=${mode}`);
 
   let supa;
