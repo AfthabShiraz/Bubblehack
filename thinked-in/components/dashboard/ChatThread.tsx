@@ -43,9 +43,30 @@ function MessageBubble({ message }: { message: ChatMessage }) {
     );
   }
 
-  // Compact thinking step — shown while the agent is mid-reasoning or once complete.
-  if (message.kind === "thinking" || (message.pending && !message.content && !message.kind)) {
+  // Pending with no content yet and no kind assigned — show spinner.
+  if (message.pending && !message.content && !message.kind) {
     return <ThinkingStep message={message} />;
+  }
+
+  // Thinking step: render any text the model emitted first, then the tool pill.
+  if (message.kind === "thinking") {
+    return (
+      <div className="flex flex-col gap-2">
+        {message.content ? (
+          <motion.div
+            className="flex items-start gap-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+          >
+            <div className="inline-block max-w-[88%] rounded-3xl rounded-tl-md glass px-4 py-3 text-[15px] leading-relaxed text-foreground">
+              <RichText text={message.content} />
+            </div>
+          </motion.div>
+        ) : null}
+        <ThinkingStep message={message} />
+      </div>
+    );
   }
 
   return (
