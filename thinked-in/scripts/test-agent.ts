@@ -37,6 +37,7 @@ async function ask(supa: ReturnType<typeof createAdminClient>, mode: MessagesMod
   const matchNames: string[] = [];
   await runAgent({
     supa,
+    userId,
     mode,
     message: q,
     onText: (t) => {

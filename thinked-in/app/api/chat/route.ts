@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { runAgent, type AgentTurnInput } from "@/lib/agent/run";
 import type { MessagesMode } from "@/lib/agent/tools";
 
@@ -9,6 +9,9 @@ export const maxDuration = 60;
 // Wire protocol (newline-delimited JSON), matching the existing UI:
 //   {"type":"matches","matches":[...]}   (cumulative; last one wins)
 //   {"type":"delta","text":"..."}        (many)
+//
+// Auth: userId comes from Clerk's server-verified session. Every DB query is
+// scoped to it explicitly (service-role client), so data is isolated per user.
 export async function POST(request: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
@@ -25,7 +28,7 @@ export async function POST(request: NextRequest) {
     /* empty handled below */
   }
 
-  const supa = createServerSupabaseClient();
+  const supa = createAdminClient();
   const { data: settings } = await supa
     .from("user_settings")
     .select("messages_mode")
@@ -40,6 +43,7 @@ export async function POST(request: NextRequest) {
       try {
         await runAgent({
           supa,
+          userId,
           mode,
           message,
           history,

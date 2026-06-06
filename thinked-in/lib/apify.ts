@@ -2,7 +2,8 @@ import { ApifyClient } from "apify-client";
 import { requireEnv } from "./supabase/env";
 
 // Two distinct actors: one for profile enrichment, one for live post/activity scraping.
-const PROFILE_ACTOR = () => process.env.APIFY_PROFILE_ACTOR || "curious_coder/linkedin-profile-scraper";
+// Default to the cookieless dev_fusion profile scraper (input: profileUrls[] only).
+const PROFILE_ACTOR = () => process.env.APIFY_PROFILE_ACTOR || "2SyF0bVxmgGr8IVCZ";
 const ACTIVITY_ACTOR = () => requireEnv("APIFY_ACTIVITY_ACTOR");
 
 let client: ApifyClient | null = null;

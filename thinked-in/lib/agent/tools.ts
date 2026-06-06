@@ -122,6 +122,8 @@ export function toolsForMode(mode: MessagesMode): Anthropic.Tool[] {
 
 export interface ToolContext {
   supa: SupabaseClient;
+  /** Clerk-verified user id; every query is scoped to it. */
+  userId: string;
   /** Accumulates people surfaced by any tool, for the UI 'matches' cards. */
   collectCards: (cards: ProfileCardData[]) => void;
 }
@@ -132,12 +134,13 @@ export async function runTool(
   input: Record<string, unknown>,
   ctx: ToolContext,
 ): Promise<unknown> {
-  const { supa, collectCards } = ctx;
+  const { supa, userId, collectCards } = ctx;
 
   switch (name) {
     case "search_by_meaning": {
       const rows = await searchByMeaning(
         supa,
+        userId,
         String(input.query ?? ""),
         (input.filters as Filters) ?? {},
         typeof input.limit === "number" ? input.limit : 30,
@@ -149,6 +152,7 @@ export async function runTool(
       const mode = input.mode === "count" ? "count" : "list";
       const res = await queryByFilter(
         supa,
+        userId,
         (input.filters as Filters) ?? {},
         mode,
         typeof input.limit === "number" ? input.limit : 40,
@@ -161,11 +165,12 @@ export async function runTool(
     }
     case "get_network_stats": {
       const g = (input.group_by as "industry" | "country" | "seniority" | "relationship_strength") ?? "industry";
-      return getNetworkStats(supa, g);
+      return getNetworkStats(supa, userId, g);
     }
     case "keyword_search": {
       const rows = await keywordSearch(
         supa,
+        userId,
         (input.terms as string[]) ?? [],
         (input.fields as ("position" | "company" | "summary" | "skills")[]) ?? undefined,
         typeof input.limit === "number" ? input.limit : 40,
@@ -174,7 +179,7 @@ export async function runTool(
       return rows.map(summarizeRow);
     }
     case "search_messages": {
-      const hits = await searchMessages(supa, String(input.query ?? ""), typeof input.limit === "number" ? input.limit : 20);
+      const hits = await searchMessages(supa, userId, String(input.query ?? ""), typeof input.limit === "number" ? input.limit : 20);
       // Surface the connected people as cards too (when matched).
       collectCards(
         hits

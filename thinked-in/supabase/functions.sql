@@ -1,9 +1,8 @@
--- Vector-search RPCs. Run AFTER schema.sql.
--- SECURITY INVOKER (default) => RLS on the underlying tables still applies, so
--- each call only sees the calling Clerk user's rows (auth.jwt()->>'sub').
+-- Vector-search RPCs. Run AFTER schema.sql. Re-run this whole file to update.
+-- Scoped explicitly by p_user_id (the Clerk-verified user id passed from the API).
 
--- Semantic search over connections, with optional fuzzy/relationship filters.
 create or replace function match_connections(
+  p_user_id text,
   query_embedding vector(1536),
   match_count int default 20,
   filter_country text default null,
@@ -39,7 +38,8 @@ as $$
          c.message_count,
          (c.embedding <=> query_embedding) as distance
   from connections c
-  where c.enrichment_status = 'enriched'
+  where c.user_id = p_user_id
+    and c.enrichment_status = 'enriched'
     and c.embedding is not null
     and (filter_country is null or c.country_norm = lower(filter_country))
     and (filter_company is null or c.company_norm ilike '%' || lower(filter_company) || '%')
@@ -51,8 +51,8 @@ as $$
   limit match_count;
 $$;
 
--- Semantic search over message history (full mode only), joined to the connection.
 create or replace function match_messages(
+  p_user_id text,
   query_embedding vector(1536),
   match_count int default 20
 )
@@ -77,7 +77,8 @@ as $$
          (m.embedding <=> query_embedding) as distance
   from messages m
   left join connections c on c.id = m.connection_id
-  where m.embedding is not null
+  where m.user_id = p_user_id
+    and m.embedding is not null
   order by m.embedding <=> query_embedding
   limit match_count;
 $$;

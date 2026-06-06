@@ -15,6 +15,8 @@ export interface AgentTurnInput {
 
 export interface RunAgentOptions {
   supa: SupabaseClient;
+  /** Clerk-verified user id; all queries are scoped to it. */
+  userId: string;
   mode: MessagesMode;
   message: string;
   history?: AgentTurnInput[];
@@ -22,6 +24,10 @@ export interface RunAgentOptions {
   onText: (text: string) => void;
   /** Called with the cumulative, deduped list of surfaced people. */
   onMatches: (matches: ProfileCardData[]) => void;
+  /** Called when the agent invokes a tool (before it runs) — for progress UI. */
+  onToolCall?: (name: string, input: Record<string, unknown>) => void;
+  /** Called after a tool returns, with a short result count/summary. */
+  onToolResult?: (name: string, resultCount: number | null) => void;
   anthropic?: Anthropic;
 }
 
@@ -37,6 +43,7 @@ export async function runAgent(opts: RunAgentOptions): Promise<void> {
   const collected: ProfileCardData[] = [];
   const ctx: ToolContext = {
     supa: opts.supa,
+    userId: opts.userId,
     collectCards: (cards) => collected.push(...cards),
   };
 
@@ -55,12 +62,16 @@ export async function runAgent(opts: RunAgentOptions): Promise<void> {
 
     const results: Anthropic.ToolResultBlockParam[] = [];
     for (const tu of toolUses) {
+      const input = tu.input as Record<string, unknown>;
+      opts.onToolCall?.(tu.name, input);
       let out: unknown;
       try {
-        out = await runTool(tu.name, tu.input as Record<string, unknown>, ctx);
+        out = await runTool(tu.name, input, ctx);
       } catch (e) {
         out = { error: e instanceof Error ? e.message : String(e) };
       }
+      const count = Array.isArray(out) ? out.length : null;
+      opts.onToolResult?.(tu.name, count);
       results.push({ type: "tool_result", tool_use_id: tu.id, content: JSON.stringify(out) });
     }
     if (collected.length) opts.onMatches(dedupeCards(collected));
