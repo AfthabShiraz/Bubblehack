@@ -9,12 +9,11 @@ const IMPORTED_KEY = "thinkedin:hasImported";
 
 type Stage = "init" | "onboarding" | "chat";
 
-// Top-level dashboard state machine. Source of truth for "has the user imported
-// a network?" is the SERVER (their connections in the DB), checked on load — so
-// returning users (and across devices) land straight in chat. localStorage is
-// only an optimistic hint to avoid a flash before the check resolves.
-export default function DashboardApp() {
-  const [stage, setStage] = useState<Stage>("init");
+// Top-level dashboard state machine. The SERVER (dashboard/page.tsx) decides the
+// initial stage from the DB and passes it in, so a stale client cache can't strand
+// a user in onboarding. We still re-check /api/status on mount as a backstop.
+export default function DashboardApp({ initialStage = "init" as Stage }: { initialStage?: Stage }) {
+  const [stage, setStage] = useState<Stage>(initialStage);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,11 +27,10 @@ export default function DashboardApp() {
           setStage("chat");
         } else {
           localStorage.removeItem(IMPORTED_KEY);
-          setStage("onboarding");
+          setStage((s) => (s === "init" ? "onboarding" : s));
         }
       } catch {
-        // Network/error fallback: trust the local hint.
-        if (!cancelled) setStage(localStorage.getItem(IMPORTED_KEY) === "true" ? "chat" : "onboarding");
+        if (!cancelled) setStage((s) => (s === "init" ? (localStorage.getItem(IMPORTED_KEY) === "true" ? "chat" : "onboarding") : s));
       }
     })();
     return () => { cancelled = true; };
