@@ -29,17 +29,17 @@ export default function LandingHero() {
       transition={{ duration: 0.42, ease: "easeInOut" }}
     >
       {/* Brand — top-left, on a solid white masthead */}
-      <header className="relative flex items-center px-6 py-6 sm:px-8">
+      <header className="relative flex items-center px-6 py-4 sm:px-8">
         {/* slightly translucent masthead bar */}
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 h-[68px] border-b border-black/10 bg-white/80 shadow-sm backdrop-blur-md"
+          className="absolute inset-x-0 top-0 h-[80px] border-b border-black/10 bg-white/80 shadow-sm backdrop-blur-md"
         />
         <Image
           src={logo}
           alt="thinkedin"
           priority
-          className="relative h-7 w-auto sm:h-8"
+          className="relative h-10 w-auto -translate-y-1 sm:h-12"
         />
       </header>
 

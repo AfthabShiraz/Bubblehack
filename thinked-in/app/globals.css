@@ -108,6 +108,33 @@ body {
   background-image: linear-gradient(120deg, #0a66c2 0%, #378fe9 100%);
 }
 
+/* Soft white "clouds" — very blurred spots that drift slowly. */
+.cloud {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.65);
+  filter: blur(60px);
+  will-change: transform;
+  pointer-events: none;
+}
+@keyframes cloud-a {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(90px, -16px, 0); }
+}
+@keyframes cloud-b {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-84px, 20px, 0); }
+}
+@keyframes cloud-c {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(64px, 28px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cloud {
+    animation: none !important;
+  }
+}
+
 /* Iridescent oil-slick sheen — rotate a conic gradient for a glassy shimmer. */
 .iridescent-sheen {
   background: conic-gradient(
