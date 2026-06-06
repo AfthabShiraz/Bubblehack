@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import OnboardingFlow from "./OnboardingFlow";
 import ChatApp from "./ChatApp";
@@ -9,36 +9,43 @@ const IMPORTED_KEY = "thinkedin:hasImported";
 
 type Stage = "init" | "onboarding" | "chat";
 
-// Read the one-time import flag from localStorage without an effect (avoids
-// hydration mismatch + setState-in-effect). Server snapshot is "init" so the
-// brief loader shows until the client resolves the real stage.
-function subscribe(onChange: () => void) {
-  window.addEventListener("storage", onChange);
-  return () => window.removeEventListener("storage", onChange);
-}
-function getSnapshot(): Stage {
-  return localStorage.getItem(IMPORTED_KEY) === "true" ? "chat" : "onboarding";
-}
-function getServerSnapshot(): Stage {
-  return "init";
-}
-
-// Top-level dashboard state machine. Onboarding is one-time: a faked
-// `hasImported` flag (localStorage) sends returning users straight to chat.
+// Top-level dashboard state machine. Source of truth for "has the user imported
+// a network?" is the SERVER (their connections in the DB), checked on load — so
+// returning users (and across devices) land straight in chat. localStorage is
+// only an optimistic hint to avoid a flash before the check resolves.
 export default function DashboardApp() {
-  const storedStage = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  // In-session overrides for transitions (consent→chat, re-import→onboarding).
-  const [override, setOverride] = useState<Stage | null>(null);
-  const stage = override ?? storedStage;
+  const [stage, setStage] = useState<Stage>("init");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/status", { cache: "no-store" });
+        const data = await res.json();
+        if (cancelled) return;
+        if (data?.hasConnections) {
+          localStorage.setItem(IMPORTED_KEY, "true");
+          setStage("chat");
+        } else {
+          localStorage.removeItem(IMPORTED_KEY);
+          setStage("onboarding");
+        }
+      } catch {
+        // Network/error fallback: trust the local hint.
+        if (!cancelled) setStage(localStorage.getItem(IMPORTED_KEY) === "true" ? "chat" : "onboarding");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleComplete = useCallback(() => {
     localStorage.setItem(IMPORTED_KEY, "true");
-    setOverride("chat");
+    setStage("chat");
   }, []);
 
   const handleReimport = useCallback(() => {
     localStorage.removeItem(IMPORTED_KEY);
-    setOverride("onboarding");
+    setStage("onboarding");
   }, []);
 
   if (stage === "init") {
