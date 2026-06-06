@@ -50,7 +50,7 @@ export default function MockChatWindow() {
   const transform = useMotionTemplate`perspective(1600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${tilt.rz}deg)`;
 
   return (
-    <div className="mx-auto w-full max-w-lg">
+    <div className="mx-auto w-full max-w-md">
       <motion.div style={{ transform }} className="will-change-transform">
         <div className="overflow-hidden rounded-2xl border border-white/70 bg-white/55 shadow-[0_40px_90px_-25px_rgba(12,74,140,0.55)] backdrop-blur-xl">
           {/* Title bar — pure white, macOS traffic lights on the left */}

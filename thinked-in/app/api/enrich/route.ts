@@ -5,7 +5,7 @@ import type { EnrichmentProgress } from "@/lib/types";
 // STUB: reports enrichment progress for a job. Progress is derived from the
 // timestamp encoded in the jobId so the endpoint is stateless. The real
 // version will poll Apify + return DB-backed counts.
-const ENRICH_DURATION_MS = 7000;
+const ENRICH_DURATION_MS = 9000;
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthorized(request))) {
@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     jobId,
     total,
     enrichedCount,
+    ratio,
     status: ratio >= 1 ? "complete" : "processing",
   };
 

@@ -44,7 +44,7 @@ export default function ChatDemo() {
   const current = CONVERSATIONS[conv];
 
   return (
-    <div className="mx-auto flex h-[340px] w-full max-w-md flex-col justify-start gap-3 overflow-hidden px-4">
+    <div className="mx-auto flex h-[300px] w-full max-w-sm flex-col justify-start gap-3 overflow-hidden px-4">
       {/* User message — right side. Keyed by conv so it re-animates on switch. */}
       <div className="flex justify-end">
         <AnimatePresence mode="wait">
@@ -94,7 +94,7 @@ export default function ChatDemo() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.25 + i * 0.3, type: "spring", stiffness: 200, damping: 22 }}
                   >
-                    <ProfileCard person={person} compact />
+                    <ProfileCard person={person} compact asLink={false} />
                   </motion.div>
                 ))}
               </div>

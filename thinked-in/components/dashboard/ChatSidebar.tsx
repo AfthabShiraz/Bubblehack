@@ -1,15 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import {
-  MessagesSquare,
-  Plus,
-  RotateCcw,
-  Settings,
-  Sparkles,
-  X,
-} from "lucide-react";
+import logo from "@/public/thinkedinBACK.png";
+import { MessagesSquare, Plus, RotateCcw, Settings, Sparkles, X } from "lucide-react";
 import type { ChatSession } from "@/lib/types";
 
 interface ChatSidebarProps {
@@ -50,13 +45,12 @@ export default function ChatSidebar({
     >
       {/* Brand — links back to the landing page (+ mobile close) */}
       <div className="flex items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-blue transition-transform active:scale-90">
-            <Sparkles className="h-4 w-4 text-white" />
-          </span>
-          <span className="text-sm font-semibold tracking-tight text-gradient">
-            thinkedin
-          </span>
+        <Link
+          href="/"
+          aria-label="thinkedin — home"
+          className="transition-transform hover:scale-[1.03] active:scale-95"
+        >
+          <Image src={logo} alt="thinkedin" className="h-6 w-auto" />
         </Link>
         <button
           onClick={onClose}
@@ -113,10 +107,20 @@ export default function ChatSidebar({
           <RotateCcw className="h-4 w-4" />
           Re-import network
         </button>
-        <button className="mb-2 flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted transition-all hover:bg-black/[0.04] hover:text-foreground active:scale-[0.98]">
+        <Link
+          href="/billing"
+          className="mb-1 flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted transition-all hover:bg-black/[0.04] hover:text-foreground active:scale-[0.98]"
+        >
           <Settings className="h-4 w-4" />
-          Settings
-        </button>
+          Billing & plan
+        </Link>
+        <Link
+          href="/pricing"
+          className="mb-2 flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-[#0a66c2] transition-all hover:bg-[#0a66c2]/[0.06] active:scale-[0.98]"
+        >
+          <Sparkles className="h-4 w-4" />
+          Upgrade
+        </Link>
         <div className="flex items-center gap-2 rounded-lg px-1 py-1">
           <UserButton appearance={{ elements: { userButtonAvatarBox: "h-8 w-8" } }} />
           <span className="text-sm text-muted">Account</span>

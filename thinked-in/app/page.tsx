@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import BackgroundFX from "@/components/BackgroundFX";
+import SiteMast from "@/components/SiteMast";
 import LandingHero from "@/components/landing/LandingHero";
 
 export default async function Home() {
@@ -8,10 +9,16 @@ export default async function Home() {
   if (userId) redirect("/dashboard");
 
   return (
-    <main className="relative flex min-h-dvh w-full flex-col overflow-hidden">
-      {/* Shared backdrop — identical to /sign-in for a seamless transition */}
+    <div className="relative flex h-dvh w-full flex-col overflow-hidden">
+      {/* Shared backdrop — covers the full page (incl. behind the translucent mast) */}
       <BackgroundFX />
-      <LandingHero />
-    </main>
+
+      {/* Sticky mast (outside the clipped/animated content so sticky works) */}
+      <SiteMast />
+
+      <main className="relative flex flex-1 flex-col overflow-hidden">
+        <LandingHero />
+      </main>
+    </div>
   );
 }

@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { Menu, Sparkles } from "lucide-react";
-import type { ChatMessage, ChatSession, ProfileCardData } from "@/lib/types";
-import { seedChatSessions } from "@/lib/mock-data";
+import { useUser } from "@clerk/nextjs";
+import { Menu } from "lucide-react";
+import type { ChatMessage, ChatSession, PostData, ProfileCardData } from "@/lib/types";
+import { loadSessions, saveSessions } from "@/lib/sessions-store";
+import logo from "@/public/thinkedinBACK.png";
+import BackgroundFX from "@/components/BackgroundFX";
 import ChatSidebar from "./ChatSidebar";
 import ChatThread from "./ChatThread";
 import ChatInput from "./ChatInput";
@@ -30,13 +33,36 @@ function newSession(): ChatSession {
 
 export default function ChatApp({ onReimport }: { onReimport: () => void }) {
   const { user } = useUser();
-  const [sessions, setSessions] = useState<ChatSession[]>(() => [
-    newSession(),
-    ...seedChatSessions,
-  ]);
-  const [activeId, setActiveId] = useState(sessions[0].id);
+
+  // Load persisted sessions once (ChatApp only mounts client-side, after
+  // DashboardApp resolves), falling back to a fresh chat on first run.
+  const [state, setState] = useState<{ sessions: ChatSession[]; activeId: string }>(
+    () => {
+      const loaded = loadSessions();
+      const sessions = loaded.length ? loaded : [newSession()];
+      return { sessions, activeId: sessions[0].id };
+    },
+  );
+  const { sessions, activeId } = state;
+  const setSessions = (
+    updater: ChatSession[] | ((prev: ChatSession[]) => ChatSession[]),
+  ) =>
+    setState((st) => ({
+      ...st,
+      sessions:
+        typeof updater === "function"
+          ? (updater as (prev: ChatSession[]) => ChatSession[])(st.sessions)
+          : updater,
+    }));
+  const setActiveId = (id: string) => setState((st) => ({ ...st, activeId: id }));
+
   const [streaming, setStreaming] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+
+  // Persist history to the store (skip while streaming to avoid thrashing).
+  useEffect(() => {
+    if (!streaming) saveSessions(sessions);
+  }, [sessions, streaming]);
 
   const active = sessions.find((s) => s.id === activeId) ?? sessions[0];
 
@@ -52,6 +78,8 @@ export default function ChatApp({ onReimport }: { onReimport: () => void }) {
   };
 
   const handleNewChat = () => {
+    // If already on a blank chat, just stay there (avoids empty duplicates).
+    if (active && active.messages.length === 0) return;
     const s = newSession();
     setSessions((prev) => [s, ...prev]);
     setActiveId(s.id);
@@ -132,12 +160,10 @@ export default function ChatApp({ onReimport }: { onReimport: () => void }) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="text-sm font-semibold tracking-tight text-gradient">
-            thinkedin
-          </span>
+          <Image src={logo} alt="thinkedin" className="h-6 w-auto" />
         </div>
 
-        <div className="aurora opacity-20" aria-hidden />
+        <BackgroundFX />
         <div className="relative z-10 flex min-h-0 flex-1 flex-col">
           {active.messages.length === 0 ? (
             <EmptyState
@@ -165,30 +191,36 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-      <motion.span
-        className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-blue shadow-md"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+      <motion.h1
+        className="text-3xl font-semibold text-white drop-shadow-[0_2px_10px_rgba(12,74,140,0.4)]"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        <Sparkles className="h-7 w-7 text-white" />
-      </motion.span>
-      <h1 className="text-2xl font-semibold text-foreground">
         {name ? `Hi ${name}, ` : "Hi, "}
-        <span className="text-gradient">talk to your network</span>
-      </h1>
-      <p className="mt-2 max-w-md text-muted">
+        <span className="text-white/85">talk to your network</span>
+      </motion.h1>
+      <motion.p
+        className="mt-2 max-w-md text-white/85 drop-shadow-[0_1px_8px_rgba(12,74,140,0.35)]"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut", delay: 0.08 }}
+      >
         Ask in plain English and I&apos;ll find the right people from your LinkedIn
         connections.
-      </p>
+      </motion.p>
       <div className="mt-7 flex flex-wrap justify-center gap-2">
-        {EXAMPLE_PROMPTS.map((p) => (
-          <button
+        {EXAMPLE_PROMPTS.map((p, i) => (
+          <motion.button
             key={p}
             onClick={() => onPick(p)}
             className="rounded-full border border-border bg-surface px-4 py-2 text-sm text-foreground shadow-sm transition-all hover:scale-[1.03] hover:bg-black/[0.04] hover:shadow active:scale-95"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut", delay: 0.18 + i * 0.07 }}
           >
             {p}
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>
@@ -232,10 +264,13 @@ async function streamReply(
 
       const event = JSON.parse(line) as
         | { type: "matches"; matches: ProfileCardData[] }
+        | { type: "post"; post: PostData }
         | { type: "delta"; text: string };
 
       if (event.type === "matches") {
         update((m) => ({ ...m, matches: event.matches }));
+      } else if (event.type === "post") {
+        update((m) => ({ ...m, post: event.post }));
       } else if (event.type === "delta") {
         update((m) => ({ ...m, content: m.content + event.text }));
       }

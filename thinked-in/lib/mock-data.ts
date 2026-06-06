@@ -99,6 +99,59 @@ export interface RosterPerson {
   avatarUrl: string;
 }
 
+// Generates a list of random, realistic people (unique stock-photo faces) for
+// the enrichment animation.
+const FIRST_NAMES = [
+  "Aisha", "Lucas", "Priya", "Tom", "Hannah", "Marco", "Chloe", "Sam", "Yuki",
+  "Daniel", "Isabella", "Ahmed", "Grace", "Felix", "Nadia", "Oliver", "Mei",
+  "Jacob", "Amara", "Liam", "Sara", "Kenji", "Elena", "Noah", "Fatima", "Henrik",
+  "Olivia", "Ravi", "Zoe", "Mateo", "Emma", "Noor", "Diego", "Hana", "Ben",
+  "Sofia", "Omar", "Lena", "Carlos", "Ivy", "Theo", "Maya", "Arjun", "Nina",
+  "Leo", "Aria", "Kai", "Ruth", "Pavel", "Tara",
+];
+const LAST_NAMES = [
+  "Rahman", "Moreau", "Nair", "Becker", "Lee", "Rossi", "Dubois", "Okoye",
+  "Tanaka", "Schmidt", "Costa", "Hassan", "Williams", "Andersson", "Petrova",
+  "Hartley", "Lin", "Stern", "Diallo", "O'Brien", "Bianchi", "Watanabe",
+  "Vasquez", "Kim", "Zahra", "Larsen", "Brooks", "Mehta", "Carter", "Ramirez",
+  "Novak", "Haddad", "Fischer", "Sato", "Walsh", "Khan", "Berg", "Mendez",
+  "Clarke", "Park", "Reyes", "Kapoor", "Holt", "Voss", "Adeyemi", "Frost",
+  "Nguyen", "Sokolov", "Dunne", "Marenko",
+];
+const ROLES = [
+  "Software Engineer @ Stripe", "Product Designer @ Figma", "Data Scientist @ Spotify",
+  "Recruiter @ Google", "Engineering Manager @ Notion", "Founder @ Northwind",
+  "Growth Lead @ Wise", "PM @ Atlassian", "ML Engineer @ DeepMind",
+  "Frontend Engineer @ Vercel", "UX Researcher @ Canva", "CTO @ Lumina AI",
+  "Talent Partner @ Meta", "Staff Engineer @ Klarna", "DevRel @ GitHub",
+  "Backend Engineer @ Shopify", "Solutions Architect @ AWS", "Founder @ Pixelforge",
+  "Data Engineer @ Bloomberg", "Design Lead @ Linear", "VP Product @ Typeform",
+  "Recruiting Lead @ Airbnb", "iOS Engineer @ Revolut", "Security Engineer @ Cloudflare",
+];
+
+export function generateEnrichmentRoster(count: number): RosterPerson[] {
+  // Pool of unique faces across men/women 0..99, shuffled.
+  const faces: { g: "men" | "women"; n: number }[] = [];
+  for (let n = 0; n < 100; n++) {
+    faces.push({ g: "men", n });
+    faces.push({ g: "women", n });
+  }
+  for (let i = faces.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [faces[i], faces[j]] = [faces[j], faces[i]];
+  }
+  const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
+
+  return Array.from({ length: count }, (_, i) => {
+    const face = faces[i % faces.length];
+    return {
+      name: `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+      role: pick(ROLES),
+      avatarUrl: portrait(face.g, face.n),
+    };
+  });
+}
+
 export const enrichmentRoster: RosterPerson[] = [
   { name: "Aisha Rahman", role: "Product Designer @ Figma", avatarUrl: portrait("women", 12) },
   { name: "Lucas Moreau", role: "Founder @ Northwind Software", avatarUrl: portrait("men", 11) },

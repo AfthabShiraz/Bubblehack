@@ -9,12 +9,14 @@ import {
   Loader2,
   MessageSquare,
   ShieldCheck,
-  Sparkles,
   UploadCloud,
 } from "lucide-react";
-import { enrichmentRoster } from "@/lib/mock-data";
+import { generateEnrichmentRoster, type RosterPerson } from "@/lib/mock-data";
 import type { EnrichmentProgress } from "@/lib/types";
+
+const CONNECTION_COUNT = 120;
 import GlassButton from "@/components/GlassButton";
+import SiteMast from "@/components/SiteMast";
 
 const LINKEDIN_EXPORT_URL =
   "https://www.linkedin.com/mypreferences/d/download-my-data";
@@ -27,6 +29,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
   const [dragging, setDragging] = useState(false);
   const [job, setJob] = useState<{ jobId: string; total: number } | null>(null);
   const [progress, setProgress] = useState<EnrichmentProgress | null>(null);
+  const [roster, setRoster] = useState<RosterPerson[]>([]);
   const fileRef = useRef<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -44,6 +47,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
   };
 
   const startEnrichment = useCallback(async () => {
+    setRoster(generateEnrichmentRoster(CONNECTION_COUNT));
     setStep("enriching");
     const form = new FormData();
     if (fileRef.current) form.append("file", fileRef.current);
@@ -68,7 +72,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
     };
 
     tick();
-    const id = setInterval(tick, 500);
+    const id = setInterval(tick, 280);
     return () => {
       active = false;
       clearInterval(id);
@@ -76,10 +80,13 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
   }, [step, job]);
 
   return (
-    <main className="relative flex h-dvh w-full items-center justify-center overflow-hidden px-4">
+    <main className="relative flex h-dvh w-full flex-col overflow-hidden">
       <div className="aurora" aria-hidden />
 
-      <div className="relative z-10 w-full max-w-xl">
+      <SiteMast />
+
+      <div className="relative z-10 flex flex-1 items-center justify-center px-4">
+        <div className="w-full max-w-xl">
         <AnimatePresence mode="wait">
           {step === "import" && (
             <Stage key="import">
@@ -112,13 +119,13 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                 className={`mt-5 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed px-6 py-12 text-center transition-colors ${
                   dragging
                     ? "border-[#0a66c2] bg-[#0a66c2]/5"
-                    : "border-border bg-surface hover:bg-black/[0.03]"
+                    : "border-border bg-surface hover:bg-[#f2f4f6]"
                 }`}
               >
                 <input
                   ref={inputRef}
                   type="file"
-                  accept=".csv"
+                  accept=".zip,.csv"
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -131,7 +138,8 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                     Drop your LinkedIn export here
                   </p>
                   <p className="text-sm text-muted">
-                    Connections.csv — or click to browse
+                    The whole .zip — we&apos;ll pull out Connections.csv &amp;
+                    messages.csv
                   </p>
                 </div>
               </label>
@@ -196,10 +204,12 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                 progress={progress}
                 ready={step === "ready"}
                 onLetsChat={onComplete}
+                roster={roster}
               />
             </Stage>
           )}
         </AnimatePresence>
+        </div>
       </div>
     </main>
   );
@@ -224,9 +234,6 @@ function Stage({ children, ...rest }: { children: React.ReactNode; key?: string 
 function AssistantBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-blue">
-        <Sparkles className="h-4 w-4 text-white" />
-      </span>
       <div className="rounded-3xl rounded-tl-lg glass-strong px-5 py-4">{children}</div>
     </div>
   );
@@ -236,31 +243,30 @@ function EnrichmentPanel({
   progress,
   ready,
   onLetsChat,
+  roster,
 }: {
   progress: EnrichmentProgress | null;
   ready: boolean;
   onLetsChat: () => void;
+  roster: RosterPerson[];
 }) {
-  const total = progress?.total ?? 0;
-  const enriched = progress?.enrichedCount ?? 0;
-  const ratio = total ? enriched / total : 0;
+  const listRef = useRef<HTMLDivElement>(null);
+  const total = roster.length;
+  const ratio = ready ? 1 : progress?.ratio ?? 0;
+  const revealed = Math.min(total, Math.ceil(total * ratio));
+  const people = roster.slice(0, revealed);
 
-  // Map real progress onto the roster so people "pop in" as it climbs.
-  const revealed = Math.min(
-    enrichmentRoster.length,
-    Math.ceil(enrichmentRoster.length * ratio),
-  );
-  const people = enrichmentRoster.slice(0, revealed);
+  // Follow the list as new connections stream in.
+  useEffect(() => {
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [revealed]);
 
   return (
     <div className="rounded-3xl glass-strong p-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          {ready ? (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-blue">
-              <Sparkles className="h-4 w-4 text-white" />
-            </span>
-          ) : (
+          {ready ? null : (
             <Loader2 className="h-6 w-6 animate-spin text-[#0a66c2]" />
           )}
           <div>
@@ -270,7 +276,7 @@ function EnrichmentPanel({
             <p className="text-sm text-muted">
               {ready
                 ? `${total} connections enriched`
-                : `${enriched}/${total} connections`}
+                : `${revealed}/${total} connections`}
             </p>
           </div>
         </div>
@@ -285,16 +291,18 @@ function EnrichmentPanel({
         />
       </div>
 
-      {/* popping roster */}
-      <div className="scroll-slim mt-5 flex max-h-64 flex-col gap-2 overflow-y-auto">
+      {/* streaming roster (auto-scrolls down) */}
+      <div
+        ref={listRef}
+        className="scroll-slim mt-5 flex max-h-64 flex-col gap-2 overflow-y-auto scroll-smooth"
+      >
         <AnimatePresence initial={false}>
-          {people.map((person) => (
+          {people.map((person, i) => (
             <motion.div
-              key={person.name}
-              layout
-              initial={{ opacity: 0, x: -24, scale: 0.85 }}
+              key={i}
+              initial={{ opacity: 0, x: -24, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 320, damping: 24 }}
+              transition={{ type: "spring", stiffness: 340, damping: 26 }}
               className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-2"
             >
               <Image
@@ -311,7 +319,6 @@ function EnrichmentPanel({
                 </p>
                 <p className="truncate text-xs text-muted">{person.role}</p>
               </div>
-              <Sparkles className="ml-auto h-3.5 w-3.5 shrink-0 text-[#0a66c2]/70" />
             </motion.div>
           ))}
         </AnimatePresence>
