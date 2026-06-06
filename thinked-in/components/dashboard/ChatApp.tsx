@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import type { ChatMessage, ChatSession, PostData, ProfileCardData } from "@/lib/types";
-import { seedChatSessions } from "@/lib/mock-data";
+import { loadSessions, saveSessions } from "@/lib/sessions-store";
 import logo from "@/public/thinkedinBACK.png";
 import BackgroundFX from "@/components/BackgroundFX";
 import ChatSidebar from "./ChatSidebar";
@@ -33,13 +33,36 @@ function newSession(): ChatSession {
 
 export default function ChatApp({ onReimport }: { onReimport: () => void }) {
   const { user } = useUser();
-  const [sessions, setSessions] = useState<ChatSession[]>(() => [
-    newSession(),
-    ...seedChatSessions,
-  ]);
-  const [activeId, setActiveId] = useState(sessions[0].id);
+
+  // Load persisted sessions once (ChatApp only mounts client-side, after
+  // DashboardApp resolves), falling back to a fresh chat on first run.
+  const [state, setState] = useState<{ sessions: ChatSession[]; activeId: string }>(
+    () => {
+      const loaded = loadSessions();
+      const sessions = loaded.length ? loaded : [newSession()];
+      return { sessions, activeId: sessions[0].id };
+    },
+  );
+  const { sessions, activeId } = state;
+  const setSessions = (
+    updater: ChatSession[] | ((prev: ChatSession[]) => ChatSession[]),
+  ) =>
+    setState((st) => ({
+      ...st,
+      sessions:
+        typeof updater === "function"
+          ? (updater as (prev: ChatSession[]) => ChatSession[])(st.sessions)
+          : updater,
+    }));
+  const setActiveId = (id: string) => setState((st) => ({ ...st, activeId: id }));
+
   const [streaming, setStreaming] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+
+  // Persist history to the store (skip while streaming to avoid thrashing).
+  useEffect(() => {
+    if (!streaming) saveSessions(sessions);
+  }, [sessions, streaming]);
 
   const active = sessions.find((s) => s.id === activeId) ?? sessions[0];
 
@@ -55,6 +78,8 @@ export default function ChatApp({ onReimport }: { onReimport: () => void }) {
   };
 
   const handleNewChat = () => {
+    // If already on a blank chat, just stay there (avoids empty duplicates).
+    if (active && active.messages.length === 0) return;
     const s = newSession();
     setSessions((prev) => [s, ...prev]);
     setActiveId(s.id);
