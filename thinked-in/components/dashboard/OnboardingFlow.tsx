@@ -11,8 +11,10 @@ import {
   ShieldCheck,
   UploadCloud,
 } from "lucide-react";
-import { enrichmentRoster } from "@/lib/mock-data";
+import { generateEnrichmentRoster, type RosterPerson } from "@/lib/mock-data";
 import type { EnrichmentProgress } from "@/lib/types";
+
+const CONNECTION_COUNT = 120;
 import GlassButton from "@/components/GlassButton";
 
 const LINKEDIN_EXPORT_URL =
@@ -26,6 +28,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
   const [dragging, setDragging] = useState(false);
   const [job, setJob] = useState<{ jobId: string; total: number } | null>(null);
   const [progress, setProgress] = useState<EnrichmentProgress | null>(null);
+  const [roster, setRoster] = useState<RosterPerson[]>([]);
   const fileRef = useRef<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,6 +46,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
   };
 
   const startEnrichment = useCallback(async () => {
+    setRoster(generateEnrichmentRoster(CONNECTION_COUNT));
     setStep("enriching");
     const form = new FormData();
     if (fileRef.current) form.append("file", fileRef.current);
@@ -67,7 +71,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
     };
 
     tick();
-    const id = setInterval(tick, 500);
+    const id = setInterval(tick, 280);
     return () => {
       active = false;
       clearInterval(id);
@@ -196,6 +200,7 @@ export default function OnboardingFlow({ onComplete }: { onComplete: () => void 
                 progress={progress}
                 ready={step === "ready"}
                 onLetsChat={onComplete}
+                roster={roster}
               />
             </Stage>
           )}
@@ -233,21 +238,24 @@ function EnrichmentPanel({
   progress,
   ready,
   onLetsChat,
+  roster,
 }: {
   progress: EnrichmentProgress | null;
   ready: boolean;
   onLetsChat: () => void;
+  roster: RosterPerson[];
 }) {
-  const total = progress?.total ?? 0;
-  const enriched = progress?.enrichedCount ?? 0;
-  const ratio = total ? enriched / total : 0;
+  const listRef = useRef<HTMLDivElement>(null);
+  const total = roster.length;
+  const ratio = ready ? 1 : progress?.ratio ?? 0;
+  const revealed = Math.min(total, Math.ceil(total * ratio));
+  const people = roster.slice(0, revealed);
 
-  // Map real progress onto the roster so people "pop in" as it climbs.
-  const revealed = Math.min(
-    enrichmentRoster.length,
-    Math.ceil(enrichmentRoster.length * ratio),
-  );
-  const people = enrichmentRoster.slice(0, revealed);
+  // Follow the list as new connections stream in.
+  useEffect(() => {
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [revealed]);
 
   return (
     <div className="rounded-3xl glass-strong p-6">
@@ -263,7 +271,7 @@ function EnrichmentPanel({
             <p className="text-sm text-muted">
               {ready
                 ? `${total} connections enriched`
-                : `${enriched}/${total} connections`}
+                : `${revealed}/${total} connections`}
             </p>
           </div>
         </div>
@@ -278,16 +286,18 @@ function EnrichmentPanel({
         />
       </div>
 
-      {/* popping roster */}
-      <div className="scroll-slim mt-5 flex max-h-64 flex-col gap-2 overflow-y-auto">
+      {/* streaming roster (auto-scrolls down) */}
+      <div
+        ref={listRef}
+        className="scroll-slim mt-5 flex max-h-64 flex-col gap-2 overflow-y-auto scroll-smooth"
+      >
         <AnimatePresence initial={false}>
-          {people.map((person) => (
+          {people.map((person, i) => (
             <motion.div
-              key={person.name}
-              layout
-              initial={{ opacity: 0, x: -24, scale: 0.85 }}
+              key={i}
+              initial={{ opacity: 0, x: -24, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 320, damping: 24 }}
+              transition={{ type: "spring", stiffness: 340, damping: 26 }}
               className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-2"
             >
               <Image
