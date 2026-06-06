@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
-import type { ChatMessage, ChatSession, ProfileCardData } from "@/lib/types";
+import type { ChatMessage, ChatSession, PostData, ProfileCardData } from "@/lib/types";
 import { seedChatSessions } from "@/lib/mock-data";
 import logo from "@/public/thinkedinBACK.png";
 import BackgroundFX from "@/components/BackgroundFX";
@@ -239,10 +239,13 @@ async function streamReply(
 
       const event = JSON.parse(line) as
         | { type: "matches"; matches: ProfileCardData[] }
+        | { type: "post"; post: PostData }
         | { type: "delta"; text: string };
 
       if (event.type === "matches") {
         update((m) => ({ ...m, matches: event.matches }));
+      } else if (event.type === "post") {
+        update((m) => ({ ...m, post: event.post }));
       } else if (event.type === "delta") {
         update((m) => ({ ...m, content: m.content + event.text }));
       }

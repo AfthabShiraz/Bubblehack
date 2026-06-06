@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import type { ChatMessage } from "@/lib/types";
 import ProfileCard from "@/components/ProfileCard";
+import PostCard from "@/components/dashboard/PostCard";
 import ThinkingDots from "@/components/ThinkingDots";
 
 export default function ChatThread({ messages }: { messages: ChatMessage[] }) {
@@ -72,6 +73,16 @@ function MessageBubble({ message }: { message: ChatMessage }) {
               </motion.div>
             ))}
           </div>
+        )}
+
+        {message.post && (
+          <motion.div
+            className="mt-3 sm:max-w-md"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <PostCard post={message.post} />
+          </motion.div>
         )}
       </div>
     </motion.div>

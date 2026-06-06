@@ -41,12 +41,21 @@ export type ProfileCardData = Pick<
 
 export type ChatRole = "user" | "assistant";
 
+/** A drafted post / outreach message the assistant can surface. */
+export interface PostData {
+  author?: { name: string; role: string; avatarUrl: string };
+  title: string;
+  body: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: ChatRole;
   content: string;
   /** Matched people the assistant surfaced inline with this reply. */
   matches?: ProfileCardData[];
+  /** A drafted post/message the assistant surfaced. */
+  post?: PostData;
   /** Set while an assistant message is still streaming in. */
   pending?: boolean;
 }
