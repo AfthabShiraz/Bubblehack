@@ -107,13 +107,48 @@ const phases = [
   },
 ];
 
-const finalQuotes = [
-  "The internet has become searchable. Professional networks haven't.",
-  "Everyone has a network worth millions in collective expertise, but no way to query it.",
-  "LinkedIn stores your connections. We help you think with them.",
-  "What if your entire professional network became searchable, conversational, and instantly accessible?",
-  "Your network already knows the answer. We're building the interface to ask.",
-  "The future isn't AI replacing relationships — it's AI making relationships computable.",
+const productJourney = [
+  {
+    node: "1",
+    label: "Call 01",
+    title: "The first requirement",
+    person: "Family business partner",
+    tag: "The Origin",
+    narrative:
+      "Our final pivot began with a conversation with my dad. Months earlier, he and his business partner had sat down with me to start documenting his network — his work is built on maintaining a large network and connecting people, and we were doing it all in Excel sheets and by hand. He told us his core requirement: he wanted to talk to an AI chat that held his entire personal network as context. That was the beginning of thinked-in. We built an MVP that took a LinkedIn CSV upload and let him reason across his whole network.",
+    quote: "I started putting all of my contacts on the Excel sheet anyway.",
+  },
+  {
+    node: "2",
+    label: "Call 02",
+    title: "Feedback & refinement",
+    person: "Thajudeen Shiraz · Collaborator",
+    tag: "Refinement",
+    narrative:
+      "We brought the product back to our collaborator, Thajudeen Shiraz, for feedback. He was impressed and suggested further adjustments — including the ability to share connections with people, which we later decided to include in our enterprise plans.",
+    quote:
+      "Say S sends a document and asks 'hey guys can you do this for me?' We get queries like this. The document contains a project. I'd like to see across my network who can fulfil this work.",
+  },
+  {
+    node: "3",
+    label: "Call 03",
+    title: "Enterprise contract",
+    person: "Thajudeen Shiraz · Collaborator",
+    tag: "Paid Enterprise",
+    narrative:
+      "Our collaborator was impressed enough at this stage to sign an enterprise contract, paying in advance for access to our enterprise build. On our most recent call about the platform, he flagged a concern about employees uploading their entire network onto a company plan — which told us we need granular control over exactly which connections are used in enterprise plans.",
+    quote: "Nobody is ever going to put their whole thing on the company.",
+  },
+  {
+    node: "✦",
+    label: "Message",
+    title: "External validation",
+    person: "Founder · Morpheus",
+    tag: "Market Validation",
+    narrative:
+      "I discussed the product with Morpheus, a startup I work for that's building an AI associate for private markets. The founder's reaction proved the use case extends even further into enterprise.",
+    quote: "By the way, this is actually the network connector we want to build at Morpheus.",
+  },
 ];
 
 const colorMap = {
@@ -272,20 +307,41 @@ export default function ResearchPage() {
                   Phase 03 · Product
                 </span>
                 <h2 className="text-xl font-semibold tracking-tight text-zinc-900">
-                  Chat with your Network
+                  thinked-in — Chat with your Network
                 </h2>
                 <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">
-                  The most valuable opportunities weren&apos;t hidden on the internet — they were hidden inside existing networks.
+                  A personal AI you can talk to that holds your entire professional network as context. What started as Excel sheets became thinked-in — built, refined, and validated through real users and a paid enterprise contract.
                 </p>
               </div>
             </div>
 
-            <div className="ml-[88px] grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {finalQuotes.map((quote, i) => (
-                <div key={i} className="border-l-2 border-emerald-400 pl-4 py-1">
-                  <p className="text-sm italic leading-relaxed text-emerald-900">
-                    &ldquo;{quote}&rdquo;
-                  </p>
+            {/* Product journey — calls */}
+            <div className="flex flex-col gap-6 mb-10">
+              {productJourney.map((call) => (
+                <div key={call.label} className="relative flex items-start gap-4">
+                  {/* Node on the timeline */}
+                  <div className="flex w-[72px] shrink-0 justify-center">
+                    <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white ring-4 ring-white shadow-sm">
+                      {call.node}
+                    </div>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 pt-1">
+                    <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-emerald-600">
+                      {call.label}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
+                      <span className="text-sm font-semibold text-zinc-900">{call.title}</span>
+                      <span className="text-xs text-zinc-400">{call.person}</span>
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                        {call.tag}
+                      </span>
+                    </div>
+                    <p className="mb-2 text-sm leading-relaxed text-zinc-500">{call.narrative}</p>
+                    <p className="border-l-2 border-emerald-400 pl-3 text-sm italic leading-relaxed text-emerald-900">
+                      &ldquo;{call.quote}&rdquo;
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
