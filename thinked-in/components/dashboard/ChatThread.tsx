@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
 import ProfileCard from "@/components/ProfileCard";
 import ThinkingDots from "@/components/ThinkingDots";
@@ -41,9 +40,6 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-blue">
-        <Sparkles className="h-4 w-4 text-white" />
-      </span>
       <div className="min-w-0 flex-1">
         {showThinking ? (
           <ThinkingDots label="thinkedin is searching your network" />

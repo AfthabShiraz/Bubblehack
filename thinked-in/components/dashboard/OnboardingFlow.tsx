@@ -9,7 +9,6 @@ import {
   Loader2,
   MessageSquare,
   ShieldCheck,
-  Sparkles,
   UploadCloud,
 } from "lucide-react";
 import { enrichmentRoster } from "@/lib/mock-data";
@@ -224,9 +223,6 @@ function Stage({ children, ...rest }: { children: React.ReactNode; key?: string 
 function AssistantBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-blue">
-        <Sparkles className="h-4 w-4 text-white" />
-      </span>
       <div className="rounded-3xl rounded-tl-lg glass-strong px-5 py-4">{children}</div>
     </div>
   );
@@ -256,11 +252,7 @@ function EnrichmentPanel({
     <div className="rounded-3xl glass-strong p-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          {ready ? (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-blue">
-              <Sparkles className="h-4 w-4 text-white" />
-            </span>
-          ) : (
+          {ready ? null : (
             <Loader2 className="h-6 w-6 animate-spin text-[#0a66c2]" />
           )}
           <div>
@@ -311,7 +303,6 @@ function EnrichmentPanel({
                 </p>
                 <p className="truncate text-xs text-muted">{person.role}</p>
               </div>
-              <Sparkles className="ml-auto h-3.5 w-3.5 shrink-0 text-[#0a66c2]/70" />
             </motion.div>
           ))}
         </AnimatePresence>

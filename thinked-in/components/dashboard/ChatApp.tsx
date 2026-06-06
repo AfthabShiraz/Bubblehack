@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { motion } from "framer-motion";
-import { Menu, Sparkles } from "lucide-react";
+import { Menu } from "lucide-react";
 import type { ChatMessage, ChatSession, ProfileCardData } from "@/lib/types";
 import { seedChatSessions } from "@/lib/mock-data";
 import ChatSidebar from "./ChatSidebar";
@@ -165,13 +164,6 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-      <motion.span
-        className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-blue shadow-md"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
-        <Sparkles className="h-7 w-7 text-white" />
-      </motion.span>
       <h1 className="text-2xl font-semibold text-foreground">
         {name ? `Hi ${name}, ` : "Hi, "}
         <span className="text-gradient">talk to your network</span>

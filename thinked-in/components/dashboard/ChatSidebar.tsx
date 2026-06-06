@@ -2,14 +2,7 @@
 
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import {
-  MessagesSquare,
-  Plus,
-  RotateCcw,
-  Settings,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { MessagesSquare, Plus, RotateCcw, Settings, X } from "lucide-react";
 import type { ChatSession } from "@/lib/types";
 
 interface ChatSidebarProps {
@@ -50,13 +43,11 @@ export default function ChatSidebar({
     >
       {/* Brand — links back to the landing page (+ mobile close) */}
       <div className="flex items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-blue transition-transform active:scale-90">
-            <Sparkles className="h-4 w-4 text-white" />
-          </span>
-          <span className="text-sm font-semibold tracking-tight text-gradient">
-            thinkedin
-          </span>
+        <Link
+          href="/"
+          className="text-base font-semibold tracking-tight text-gradient transition-transform active:scale-95"
+        >
+          thinkedin
         </Link>
         <button
           onClick={onClose}
