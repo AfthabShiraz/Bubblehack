@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import logo from "@/public/thinkedinbig.png";
 import GetStartedBubble from "./GetStartedBubble";
 import MockChatWindow from "./MockChatWindow";
 
@@ -33,10 +35,12 @@ export default function LandingHero() {
           aria-hidden
           className="absolute inset-x-0 top-0 h-[68px] border-b border-black/10 bg-white/80 shadow-sm backdrop-blur-md"
         />
-        {/* TODO: replace wordmark with the real PNG logo when provided. */}
-        <span className="relative text-xl font-semibold tracking-tight text-gradient">
-          thinkedin
-        </span>
+        <Image
+          src={logo}
+          alt="thinkedin"
+          priority
+          className="relative h-7 w-auto sm:h-8"
+        />
       </header>
 
       {/* Headline → CTA → live chat showcase */}
