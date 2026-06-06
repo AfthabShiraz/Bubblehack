@@ -1,6 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Tells the dashboard whether the signed-in user already has a network loaded.
 // (Temporarily returns diagnostics to debug a prod data-scoping mismatch.)
 export async function GET() {
